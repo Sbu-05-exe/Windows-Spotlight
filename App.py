@@ -1,5 +1,6 @@
 import PyQt5, os, sys
-from PyQt5.QtWidgets import QApplication, QMainWindow, QFrame, QLabel, QStackedWidget
+from PyQt5.QtWidgets import QApplication, QWidget, QFrame, QMainWindow 
+from PyQt5.QtWidgets import QLabel, QStackedWidget, QGridLayout
 
 class Window(QMainWindow):
 	def __init__(self, *args, **kwargs):
@@ -11,9 +12,9 @@ class Window(QMainWindow):
 
 	def createWindow(self):
 		main_frm = QFrame(self)
-		my_layout = QGridLayout()
-		mainFrame.setLayout()
-		return mainFrame
+		grid_layout = QGridLayout()
+		main_frm.setLayout(grid_layout)
+		return main_frm
 
 def main():
 	App = QApplication(sys.argv)
@@ -23,7 +24,7 @@ def main():
 	win.show
 	sys.exit(App.exec_())
 
-runTests = True
+runTests = False
 
 def getImageinDir(dir_):
 	# First check if a the file is 
