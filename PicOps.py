@@ -1,39 +1,41 @@
 import PyQt5, sys, os
+import App
 from PyQt5.QtWidgets import QApplication, QWidget, QFrame, QLabel, QPushButton
 from PyQt5.QtWidgets import QListWidget, QGridLayout, QVBoxLayout
 from PyQt5.QtWidgets import QSizePolicy as QP
 from PyQt5.QtCore import Qt
 
-def getImages(dir_):
-	# First check if a the file is 
-	if (os.path.isdir(dir_)):
-		# sifting out files with a picture file extension
-		file_extensions = ['jpg','png','tiff','jpeg'] 
-		images = [filename for filename in os.listdir(dir_) if (filename[len(filename) - 3:]) in file_extensions]
-		
-		return images
-
 class OptionsWidget(QWidget):
-	def __init__(self, dirs = None, setImageFunc = None):
+	def __init__(self, setImageFunc = None):
 		super().__init__()
 		# Widgets that we will repeatedly make reference to 
 		self.layout = None
-		self.QListWidget = None
+		self.pic_lst = None
 
-		# A dictionary that helps our function flow
-		self.dirs = dirs
 		self.initUI()
 		self.setLayout(self.layout)
 		self.show()
 
+	def setImages(self):
+		if App.dirs:
+			cd = App.dirs['cd']
+			self.pic_lst.addItems(App.images)
+
+			if App.images:
+				# Automatically select the first item in the list if there is 1
+				self.onItemSelect(self.pic_lst.item(0))
+
 	def initUI(self):
 		grid_layout = QGridLayout()
-		btn_layout = QVBoxLayout() 
+		btn_layout = QVBoxLayout()
 
 		btn_frame = QFrame()
 		btn_frame.setLayout(btn_layout) 
 
-		self.QListWidget = QListWidget()
+		self.pic_lst = QListWidget()
+		self.pic_lst.itemClicked.connect(self.onItemSelect)
+		self.pic_lst.itemActivated.connect(self.onItemSelect)
+		# print(dir(self.pic_lst))
 
 		btnMove = QPushButton()
 		btnCopy = QPushButton()
@@ -53,8 +55,9 @@ class OptionsWidget(QWidget):
 		# btnMove.clicked.connect()
 		# btnCopy.clicked.connect()
 
+		cd = App.dirs['cd'] if App.dirs else ''
 		lblRoot = QLabel()
-		lblRoot.setText('Root Label')
+		lblRoot.setText(f'Current folder: {cd}')
 		lblRoot.setAlignment(Qt.AlignCenter)
 		# print(dir(lblRoot.alignment))
 		# print(dir(lblRoot))
@@ -65,10 +68,19 @@ class OptionsWidget(QWidget):
 		btn_layout.addWidget(btnDelete)
 
 		grid_layout.addWidget(lblRoot)
-		grid_layout.addWidget(self.QListWidget,1,0)
+		grid_layout.addWidget(self.pic_lst,1,0)
 		grid_layout.addWidget(btn_frame, 1 , 1 )
 
 		self.layout = grid_layout
+
+	def onItemSelect(self, item):
+		App.activeImage = item.text()
+
+		self.setPixmap()
+
+
+	def setFn(self, fn):
+		self.setPixmap = fn
 
 def main():
 	App = QApplication(sys.argv)
@@ -76,6 +88,7 @@ def main():
 
 	PicItems = OptionsWidget()
 	PicItems.show()
+	PicItems.setImages()
 
 	sys.exit(App.exec_()) 
 
