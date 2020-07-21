@@ -10,7 +10,7 @@ This applications finds your windows spotlight images and places them in a folde
 - Be able to delete, move images between folders
 - add a touch of styling with QCSS
 
+In that order
+
 Start project date: 			15 July
 Main Objective Completion date: TBD
-
-In that order
