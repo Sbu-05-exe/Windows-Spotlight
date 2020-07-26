@@ -1,13 +1,17 @@
 import PyQt5, sys, os
-import App
 from PyQt5.QtWidgets import QApplication, QWidget, QFrame, QLabel, QPushButton
 from PyQt5.QtWidgets import QListWidget, QGridLayout, QVBoxLayout
 from PyQt5.QtWidgets import QSizePolicy as QP
 from PyQt5.QtCore import Qt
 
+temp_func = lambda x : None
+
 class OptionsWidget(QWidget):
-	def __init__(self, setImageFunc = None):
+	def __init__(self, fnPixmap = temp_func, fnUpdate = temp_func, paths = None):
 		super().__init__()
+		# Default will be a function that returns none, so my program hopefully won't break
+		self.setPixmap, self.updateApp, self.paths = fnPixmap, fnUpdate, paths
+
 		# Widgets that we will repeatedly make reference to 
 		self.layout = None
 		self.pic_lst = None
@@ -16,14 +20,20 @@ class OptionsWidget(QWidget):
 		self.setLayout(self.layout)
 		self.show()
 
-	def setImages(self):
-		if App.dirs:
-			cd = App.dirs['cd']
-			self.pic_lst.addItems(App.images)
+	def setImages(self, images):
+		self.pic_lst.setEnabled(True)
+		self.pic_lst.clear()
+		self.pic_lst.addItems(images)
 
-			if App.images:
-				# Automatically select the first item in the list if there is 1
-				self.onItemSelect(self.pic_lst.item(0))
+		if images:
+			# Automatically select the first item in the list if there is 1
+			self.onItemSelect(self.pic_lst.item(0))
+
+		else:
+			self.pic_lst.addItem('This directory does not contain images.')
+			self.pic_lst.addItem('Change direcotories to continue')
+			self.pic_lst.setEnabled(False)
+
 
 	def initUI(self):
 		grid_layout = QGridLayout()
@@ -35,7 +45,6 @@ class OptionsWidget(QWidget):
 		self.pic_lst = QListWidget()
 		self.pic_lst.itemClicked.connect(self.onItemSelect)
 		self.pic_lst.itemActivated.connect(self.onItemSelect)
-		# print(dir(self.pic_lst))
 
 		btnMove = QPushButton()
 		btnCopy = QPushButton()
@@ -52,15 +61,14 @@ class OptionsWidget(QWidget):
 		btnStart.setSizePolicy(QP.Preferred, QP.Preferred)
 		btnDelete.setSizePolicy(QP.Preferred, QP.Preferred)
 
-		# btnMove.clicked.connect()
-		# btnCopy.clicked.connect()
+		btnStart.clicked.connect(self.onStartClick)
 
-		cd = App.dirs['cd'] if App.dirs else ''
+		cd = self.paths['cd'] if self.paths else ''
 		lblRoot = QLabel()
 		lblRoot.setText(f'Current folder: {cd}')
 		lblRoot.setAlignment(Qt.AlignCenter)
-		# print(dir(lblRoot.alignment))
-		# print(dir(lblRoot))
+
+		self.lblRoot = lblRoot
 
 		btn_layout.addWidget(btnCopy)
 		btn_layout.addWidget(btnMove)
@@ -73,14 +81,19 @@ class OptionsWidget(QWidget):
 
 		self.layout = grid_layout
 
+	def onStartClick(self):
+		os.startfile('spotlight.bat')
+		self.updateApp()
+
+	def onMoveClick(self):
+		self.active
+
 	def onItemSelect(self, item):
-		App.activeImage = item.text()
-
-		self.setPixmap()
+		self.setPixmap(item.text())
 
 
-	def setFn(self, fn):
-		self.setPixmap = fn
+	def setFolder(self, folder):
+		self.lblRoot.setText(folder)
 
 def main():
 	App = QApplication(sys.argv)
@@ -88,7 +101,7 @@ def main():
 
 	PicItems = OptionsWidget()
 	PicItems.show()
-	PicItems.setImages()
+	PicItems.setImages([])
 
 	sys.exit(App.exec_()) 
 

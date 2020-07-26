@@ -1,4 +1,3 @@
-import App
 import PyQt5, sys
 from PyQt5.QtWidgets import QWidget, QLabel, QListWidget
 from PyQt5.QtWidgets import QApplication, QPushButton, QVBoxLayout, QHBoxLayout
@@ -6,8 +5,10 @@ from PyQt5.QtWidgets import QSizePolicy as QP
 from PyQt5.QtGui import QPixmap
 
 class PictureDisplay(QWidget):
-	def __init__(self):
+	def __init__(self, activeImage = None, images = None, path= None):
 		super().__init__()
+		self.activeImage, self.images, self.path = activeImage, images, path
+
 		self.picture = None
 		setting_layout, self.btnBackward, self.btnForward = self.create_layout()
 		self.setLayout(setting_layout)
@@ -31,9 +32,7 @@ class PictureDisplay(QWidget):
 		btnBackward.setText('<--')
 
 		btnForward.clicked.connect(lambda: self.nextpic(1))
-		btnBackward.clicked.connect(lambda :self.nextpic(-1) )
-
-		print(dir(btnBackward))
+		btnBackward.clicked.connect(lambda :self.nextpic(-1))
 
 		hbox.addWidget(btnBackward)
 		hbox.addWidget(self.picture)
@@ -41,37 +40,61 @@ class PictureDisplay(QWidget):
 
 		return hbox, btnBackward, btnForward
 
-	def setFn(self):
-		self.setPicture
-
 	def setPicture(self):
-		pixmap = QPixmap(App.dirs['cd'] + App.activeImage)
+		if self.activeImage:
+			# set the picture on the screen
 
-		index = (App.images.index(App.activeImage))
+			src = self.path + '/' + self.activeImage
 
-		if index == 0:
-			self.btnBackward.setEnabled(False)
-			self.btnForward.setEnabled(True)
+			pixmap = QPixmap(self.path + '/'+ self.activeImage)
+			height, width = pixmap.height(), pixmap.width()
+			print('Dimensions', height,'x',width)
 
-		elif index == (len(App.images) -1):
-			self.btnForward.setEnabled(False)
-			self.btnBackward.setEnabled(True)
+			pixmap = pixmap.scaled(500, 300)
+			self.picture.setPixmap(pixmap)
+
+			# Button control
+			print(self.activeImage in self.images)
+
+			if self.activeImage in self.images:
+				index = (self.images.index(self.activeImage))
+
+			else:
+				index = 0
+
+			if index == 0:
+				self.btnBackward.setEnabled(False)
+				self.btnForward.setEnabled(True)
+
+			elif index == len(self.images)-1:
+				self.btnForward.setEnabled(False)
+				self.btnBackward.setEnabled(True)
+
+			else:
+				self.btnForward.setEnabled(True)
+				self.btnBackward.setEnabled(True)
+
+
 
 		else:
-			self.btnForward.setEnabled(True)
-			self.btnBackward.setEnabled(True)
-
-		print('height:', pixmap.height())
-		print('width:', pixmap.height())
-
-		pixmap = pixmap.scaled(500, 300)
-		self.picture.setPixmap(pixmap)
+			self.btnForward.setEnabled(False)
+			self.btnBackward.setEnabled(False)
 
 	def nextpic(self, forward=1):
-		index = (App.images.index(App.activeImage))
+		index = (self.images.index(self.activeImage))
 		index = index + forward
-		App.activeImage = App.images[index]
+		self.activeImage = self.images[index]
 		self.setPicture()
+
+	def setImages(self,images):
+		self.Images = images
+
+	def setActiveImage(self, image):
+		self.activeImage = image
+
+	def setPath(self, path):
+		self.path = path
+
 
 def main():
 	App = QApplication(sys.argv)
