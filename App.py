@@ -22,16 +22,20 @@ class Window(QMainWindow):
 	def createMenu(self):
 		menu = self.menuBar()
 		file = menu.addMenu('file')
-		change_curr_dir = file.addAction('Change current directory')
-		change_dest_dir = file.addAction('Change destination directory')
+		
+		cd = os.path.basename(self.main_frm.getPath())
+		destpath = os.path.basename(self.main_frm.getDestPath())
+
+		change_curr_dir = file.addAction(f"Change current directory \t| {cd}" )
+		change_dest_dir = file.addAction(f"Change destination directory \t| {destpath} ")
 
 		change_curr_dir.triggered.connect(lambda: self.selectAFolder('cd'))
 		change_dest_dir.triggered.connect(lambda: self.selectAFolder('destdir'))
 
 	def selectAFolder(self, key = 'cd'):
 		# print('hey this works')
-		path = self.main_frm.getPath()
-		folder = str(QFileDialog.getExistingDirectory(self, "SelectDirectory", path))
+		destpath = self.main_frm.getDestPath()
+		folder = str(QFileDialog.getExistingDirectory(self, "SelectDirectory", despath))
 
 		self.main_frm.setPath(key, folder)
 

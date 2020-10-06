@@ -5,7 +5,6 @@ from PyQt5.QtWidgets import QSizePolicy as QP
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPixmap
 
-
 class PicWidget(QWidget):
 	def __init__(self, *args, **kwargs):
 		super(PicWidget, self).__init__(*args, **kwargs)
@@ -28,12 +27,18 @@ class PicWidget(QWidget):
 	def setPath(self, key, path):
 		self.paths[key] = path
 
+	def getDestPath(self): 
+		return self.paths['destdir']
+
 	def getPath(self):
 		return self.paths['cd']
 
+	def refreshImages(self, folder):
+		self.images = utility.getImages(folder)
+
 	def updateCD(self, folder):
 		self.lblRoot.setText(folder)
-		self.images = utility.getImages(folder)
+		self.refreshImages(folder)
 		self.activeImage = self.images[0] if self.images else None
 		self.setImages()
 
@@ -125,6 +130,8 @@ class PicWidget(QWidget):
 		# TODO
 		btnMove.clicked.connect(self.onMoveClick)
 		btnStart.clicked.connect(self.onStartClick)
+		btnDelete.clicked.connect(self.onDelClick)
+		btnCopy.clicked.connect(self.onDelClick)
 
 		cd = self.paths['cd'] if self.paths else ''
 		lblRoot = QLabel()
@@ -236,6 +243,7 @@ class PicWidget(QWidget):
 		home = self.paths['home']
 		os.chdir(home)
 		os.startfile('spotlight.bat')
+		self.refreshImages(self.getPath())
 		self.setImages()
 
 	def onDelClick(self):
@@ -243,7 +251,10 @@ class PicWidget(QWidget):
 		os.chdir(cd)
 		os.system(f'del {self.activeImage}')
 		print(f'deleting {self.activeImage}...')
+
 		self.nextpic()
+		self.refreshImages(cd)
+		self.setImages()
 
 	def initUI(self):
 		grid_layout = QGridLayout()
