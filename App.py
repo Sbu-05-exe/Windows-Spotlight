@@ -35,7 +35,7 @@ class Window(QMainWindow):
 	def selectAFolder(self, key = 'cd'):
 		# print('hey this works')
 		destpath = self.main_frm.getDestPath()
-		folder = str(QFileDialog.getExistingDirectory(self, "SelectDirectory", despath))
+		folder = str(QFileDialog.getExistingDirectory(self, "SelectDirectory", destpath))
 
 		self.main_frm.setPath(key, folder)
 

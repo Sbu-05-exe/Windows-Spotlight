@@ -33,6 +33,7 @@ def getPaths():
 
 						paths[key] = path
 		else:
+			
 			paths['cd'] = default_dir
 			paths['destdir'] = default_dir
 	

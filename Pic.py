@@ -240,9 +240,7 @@ class PicWidget(QWidget):
 		os.system(f'ren "{src}"1 "{src}"')
 
 	def onStartClick(self):
-		home = self.paths['home']
-		os.chdir(home)
-		os.startfile('spotlight.bat')
+		os.startfile('C:/Users/itsbu/Desktop/Hacks/Projects/Windows Spotlight/spotlight.bat')
 		self.refreshImages(self.getPath())
 		self.setImages()
 
